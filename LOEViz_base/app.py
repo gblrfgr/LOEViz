@@ -128,11 +128,13 @@ def loe_filter(loe_checklist):
                             selected_nodes = selected_nodes + addl_node + loe_node
 
     # remove duplicate nodes
-    sel_nodes = []
-    [sel_nodes.append(node) for node in selected_nodes if node not in sel_nodes]
+    unique_nodes = []
+    for node in selected_nodes:
+        if node not in unique_nodes:
+            unique_nodes.append(node)
 
     # return selected elements
-    return sel_nodes + selected_edges
+    return unique_nodes + selected_edges
 
 
 # display node info when clicked
