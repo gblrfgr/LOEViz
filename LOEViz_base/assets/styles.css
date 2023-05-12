@@ -1,0 +1,16 @@
+@import url('https://unpkg.com/@catppuccin/palette/css/catppuccin.css');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;1,300;1,800;1,900&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: var(--ctp-latte-text);
+}
+
+body {
+    font-family: sans-serif;
+}
+
+.tab {
+    font-weight: 600;
+}

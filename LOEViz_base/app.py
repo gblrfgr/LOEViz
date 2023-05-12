@@ -32,14 +32,14 @@ cytoscape = cyto.Cytoscape(
 
 network_view_layout = [
     # title block on top
-    html.Div(
-        id="title-block",
-        children=[
-            html.H1("Project Network"),
-            html.P("Click or hover over an objective to see details"),
-            html.Hr(),
-        ],
-    ),
+    # html.Div(
+    #     id="title-block",
+    #     children=[
+    #         html.H1("Project Network"),
+    #         html.P("Click or hover over an objective to see details"),
+    #         html.Hr(),
+    #     ],
+    # ),
     # menu block for filters, checklist, etc.
     html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
     # cytoscape block
@@ -78,8 +78,12 @@ app.layout = html.Div(
             [
                 dcc.Tabs(
                     [
-                        dcc.Tab(label="Network View", children=network_view_layout),
-                        dcc.Tab(label="Timeline View"),
+                        dcc.Tab(
+                            label="Network View",
+                            className="tab",
+                            children=network_view_layout,
+                        ),
+                        dcc.Tab(label="Timeline View", className="tab"),
                     ]
                 )
             ]
