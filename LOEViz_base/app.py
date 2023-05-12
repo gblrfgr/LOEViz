@@ -30,47 +30,60 @@ cytoscape = cyto.Cytoscape(
 
 # LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
 
+network_view_layout = [
+    # title block on top
+    html.Div(
+        id="title-block",
+        children=[
+            html.H1("Project Network"),
+            html.P("Click or hover over an objective to see details"),
+            html.Hr(),
+        ],
+    ),
+    # menu block for filters, checklist, etc.
+    html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
+    # cytoscape block
+    html.Div(id="cytoscape-block", children=[cytoscape, html.Hr()]),
+    # info block
+    html.Div(
+        id="info-block",
+        children=[
+            # left column displays click data
+            html.Div(
+                id="left-col",
+                style={"width": "40%", "height": "100px", "float": "left"},
+                children=[
+                    html.H4("Click Info"),
+                    html.P(id="cytoscape-tapNodeData-output"),
+                ],
+            ),
+            # right column displays hover data
+            html.Div(
+                id="right-col",
+                style={"width": "40%", "height": "100px", "float": "right"},
+                children=[
+                    html.H4("Hover Info"),
+                    html.P(id="cytoscape-mouseoverNodeData-output"),
+                ],
+            ),
+            html.Hr(),
+        ],
+    ),
+]
+
 app.layout = html.Div(
     id="app-container",
     children=[
-        # title block on top
         html.Div(
-            id="title-block",
-            children=[
-                html.H1("Project Network"),
-                html.P("Click or hover over an objective to see details"),
-                html.Hr(),
-            ],
-        ),
-        # menu block for filters, checklist, etc.
-        html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
-        # cytoscape block
-        html.Div(id="cytoscape-block", children=[cytoscape, html.Hr()]),
-        # info block
-        html.Div(
-            id="info-block",
-            children=[
-                # left column displays click data
-                html.Div(
-                    id="left-col",
-                    style={"width": "40%", "height": "100px", "float": "left"},
-                    children=[
-                        html.H4("Click Info"),
-                        html.P(id="cytoscape-tapNodeData-output"),
-                    ],
-                ),
-                # right column displays hover data
-                html.Div(
-                    id="right-col",
-                    style={"width": "40%", "height": "100px", "float": "right"},
-                    children=[
-                        html.H4("Hover Info"),
-                        html.P(id="cytoscape-mouseoverNodeData-output"),
-                    ],
-                ),
-                html.Hr(),
-            ],
-        ),
+            [
+                dcc.Tabs(
+                    [
+                        dcc.Tab(label="Network View", children=network_view_layout),
+                        dcc.Tab(label="Timeline View"),
+                    ]
+                )
+            ]
+        )
     ],
 )
 
@@ -80,7 +93,7 @@ app.layout = html.Div(
 
 # LOE checklist displays nodes in selected LOE, along with dependencies in other LOEs
 @app.callback(Output("cytoscape", "elements"), Input("loe_checklist", "value"))
-def loe_filter(loe_checklist):
+def loe_filter(loe_checklist: list[str]):
     selected_nodes = []
     selected_edges = []
 
