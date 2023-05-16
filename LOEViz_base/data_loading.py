@@ -16,7 +16,7 @@ def validate_columns(df: pd.DataFrame):
     EXPECTED = pd.Index(
         ["ID", "Description", "Start Date", "End Date", "Status", "Dependencies"]
     )
-    if len(df.columns) != len(EXPECTED) or df.columns != EXPECTED:
+    if (len(df.columns) != len(EXPECTED)) or (df.columns != EXPECTED).any():
         for actual in df.columns:
             if actual not in EXPECTED:
                 logging.error(f'Unexpected column "{actual}"')
@@ -91,10 +91,12 @@ def validate_dependencies(df: pd.DataFrame):
         df (pd.DataFrame): The DataFrame containing the project data.
     """
     for dependency_list in df["Dependencies"]:
-        dependencies = re.split(r"[,\w]", dependency_list)
+        if not isinstance(dependency_list, str):
+            continue
+        dependencies = dependency_list.split(",")
         for dependency in dependencies:
-            if dependency not in df["ID"]:
-                logging.error(f"Invalid dependencies \"{dependencies.join(',')}\"")
+            if not (df["ID"] == dependency).any():
+                logging.error(f"Invalid dependencies \"{','.join(dependencies)}\"")
                 sys.exit(-1)
 
 
