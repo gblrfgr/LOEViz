@@ -1,6 +1,7 @@
 # GENERATE ELEMENTS
 
 import data_loading
+import re
 
 project_data = data_loading.load_data("project_state.xlsx")
 
@@ -24,7 +25,6 @@ for _, row in project_data.iterrows():
         )
     elif row["ID"].startswith("O"):
         parent_id = f"LOE{row['ID'].split('.')[0][1:]}"
-        print(parent_id)
         objs.append(
             {
                 "data": {
@@ -43,7 +43,6 @@ for _, row in project_data.iterrows():
         )
     elif row["ID"].startswith("IO"):
         parent_id = f"LOE{row['ID'].split('.')[0][2:]}"
-        print(parent_id)
         objs.append(
             {
                 "data": {

@@ -67,7 +67,6 @@ network_view_layout = [
                     html.P(id="cytoscape-mouseoverNodeData-output"),
                 ],
             ),
-            html.Hr(),
         ],
     ),
 ]
@@ -84,7 +83,7 @@ fig = px.timeline(
         "On Track": "green",
         "Complete": "blue",
     },
-    hover_data="Description"
+    hover_data="Description",
 )
 fig.add_shape(
     type="line",
@@ -97,6 +96,31 @@ fig.add_shape(
 fig.add_annotation(
     x=pd.Timestamp.now(), y=len(project_data) + 1, text="Today", showarrow=False
 )
+fig.update_yaxes(autorange="reversed")
+for index, row in project_data.iterrows():
+    dependency_list = row["Dependencies"]
+    if isinstance(dependency_list, str):
+        dependencies = dependency_list.split(",")
+    else:
+        continue
+    for dep in dependencies:
+        dep_ind = project_data.index[project_data["ID"] == dep].to_list()[0]
+        dep_row = project_data.loc[dep_ind]
+        fig.add_annotation(
+            ax=dep_row["End Date"],
+            ay=dep_row["ID"],
+            x=max(row["Start Date"], dep_row["End Date"]),
+            y=row["ID"],
+            xref="x",
+            yref="y",
+            axref="x",
+            ayref="y",
+            showarrow=True,
+            text="",
+            arrowhead=3,
+            arrowwidth=1.5,
+            arrowcolor="black",
+        )
 
 
 app.layout = html.Div(
