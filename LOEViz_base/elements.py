@@ -32,7 +32,6 @@ for _, row in project_data.iterrows():
                     "label": row["ID"],
                     "description": row["Description"],
                     "status": row["Status"].lower(),
-                    # "progress": "neutral",
                     "parent": parent_id,
                 },
                 "position": {
@@ -52,7 +51,6 @@ for _, row in project_data.iterrows():
                     "label": row["ID"],
                     "description": row["Description"],
                     "status": row["Status"].lower(),
-                    # "progress": "neutral",
                     "parent": parent_id,
                 },
                 "position": {

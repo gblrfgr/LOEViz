@@ -37,13 +37,8 @@ stylesheet = [
     },
     # Attribute selectors
     # Status
-    {
-        "selector": '[status = "overdue"]',
-        "style": {
-            "background-color": "red",
-        },
-    },
-    {"selector": 'node[status = "on track"]', "style": {"background-color": "green"}},
+    {"selector": '[status = "overdue"]', "style": {"background-color": "red"}},
+    {"selector": '[status = "on track"]', "style": {"background-color": "green"}},
     {"selector": '[status = "at risk"]', "style": {"background-color": "yellow"}},
-    {"selector": '[status = "completed"]', "style": {"background-color": "blue"}},
+    {"selector": '[status = "complete"]', "style": {"background-color": "blue"}},
 ]
