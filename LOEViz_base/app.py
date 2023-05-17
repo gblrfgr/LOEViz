@@ -1,9 +1,19 @@
 from dash import Dash, html, dcc, Input, Output
 import dash_cytoscape as cyto
 import json
+import plotly.express as px
+import pandas as pd
 
 from styling import stylesheet
-from elements import all_elements, nodes, nodes_list, edges, loes, loes_list
+from elements import (
+    all_elements,
+    nodes,
+    nodes_list,
+    edges,
+    loes,
+    loes_list,
+    project_data,
+)
 
 # APP CAPABILITIES:
 # 1. DISPLAY LOE NETWORK
@@ -31,15 +41,6 @@ cytoscape = cyto.Cytoscape(
 # LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
 
 network_view_layout = [
-    # title block on top
-    # html.Div(
-    #     id="title-block",
-    #     children=[
-    #         html.H1("Project Network"),
-    #         html.P("Click or hover over an objective to see details"),
-    #         html.Hr(),
-    #     ],
-    # ),
     # menu block for filters, checklist, etc.
     html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
     # cytoscape block
@@ -71,6 +72,33 @@ network_view_layout = [
     ),
 ]
 
+fig = px.timeline(
+    data_frame=project_data,
+    x_start="Start Date",
+    x_end="End Date",
+    y="ID",
+    color="Status",
+    color_discrete_map={
+        "Overdue": "red",
+        "At Risk": "yellow",
+        "On Track": "green",
+        "Complete": "blue",
+    },
+    hover_data="Description"
+)
+fig.add_shape(
+    type="line",
+    x0=pd.Timestamp.now(),
+    y0=-0.5,
+    x1=pd.Timestamp.now(),
+    y1=len(project_data) + 0.5,
+    line=dict(color="black", dash="dashdot", width=3),
+)
+fig.add_annotation(
+    x=pd.Timestamp.now(), y=len(project_data) + 1, text="Today", showarrow=False
+)
+
+
 app.layout = html.Div(
     id="app-container",
     children=[
@@ -83,7 +111,11 @@ app.layout = html.Div(
                             className="tab",
                             children=network_view_layout,
                         ),
-                        dcc.Tab(label="Timeline View", className="tab"),
+                        dcc.Tab(
+                            label="Timeline View",
+                            className="tab",
+                            children=dcc.Graph(figure=fig),
+                        ),
                     ]
                 )
             ]
