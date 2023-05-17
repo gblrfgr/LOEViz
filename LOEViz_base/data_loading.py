@@ -100,6 +100,32 @@ def validate_dependencies(df: pd.DataFrame):
                 sys.exit(-1)
 
 
+def process_statuses(df: pd.DataFrame) -> pd.DataFrame:
+    overdue_updated = df.copy()
+    for ind, row in df.iterrows():
+        if (
+            row["End Date"] < pd.Timestamp.today()
+            and row["Status"].lower() != "complete"
+        ):
+            row["Status"] = "Overdue"
+        overdue_updated.loc[ind] = row
+    dependency_updated = overdue_updated.copy()
+    for ind, row in overdue_updated.iterrows():
+        dependency_list = row["Dependencies"]
+        if not isinstance(dependency_list, str):
+            continue
+        dependencies = dependency_list.split(",")
+        for dep in dependencies:
+            dep_ind = overdue_updated.index[overdue_updated["ID"] == dep].to_list()[0]
+            dep_row = overdue_updated.loc[dep_ind]
+            if (
+                dep_row["Status"].lower() == "overdue"
+                and row["Status"].lower() != "overdue"
+            ):
+                dependency_updated.at[ind, "Status"] = "At Risk"
+    return dependency_updated
+
+
 def load_data(filename: str) -> pd.DataFrame:
     """Load project data from an Excel worksheet.
 
@@ -122,4 +148,6 @@ def load_data(filename: str) -> pd.DataFrame:
     validate_dates(df)
     validate_statuses(df)
     validate_dependencies(df)
-    return df
+    result = process_statuses(df)
+    result.to_excel(filename, sheet_name="LOEs, IOs, and Objectives", index=False)
+    return result
