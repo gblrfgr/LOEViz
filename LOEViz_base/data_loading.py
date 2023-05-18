@@ -101,6 +101,15 @@ def validate_dependencies(df: pd.DataFrame):
 
 
 def process_statuses(df: pd.DataFrame) -> pd.DataFrame:
+    """Update the statuses of each different task in a project to reflect the current
+    overall state.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the project data.
+
+    Returns:
+        pd.DataFrame: A new DataFrame containing the updated project data.
+    """
     overdue_updated = df.copy()
     for ind, row in df.iterrows():
         if (

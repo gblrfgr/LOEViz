@@ -15,14 +15,16 @@ from elements import (
     project_data,
 )
 
+
 # APP CAPABILITIES:
 # 1. DISPLAY LOE NETWORK
-# 2. CLICK AND HOVER TO DISPLAY NODE OBJECTIVE DETAILS
+# 2. CLICK TO DISPLAY NODE OBJECTIVE DETAILS
 # 3. SELECTIVELY VIEW LOES
+# 4. DISPLAY LOES IN A TIMELINE VIEW WHICH ALSO DISPLAYS DEPENDENCIES
 
 app = Dash(__name__)
-
 cyto.load_extra_layouts()
+
 
 # CREATE MORE COMPLEX APP COMPONENTS
 
@@ -38,15 +40,7 @@ cytoscape = cyto.Cytoscape(
     stylesheet=stylesheet,
 )
 
-# LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
-
-network_view_layout = [
-    # menu block for filters, checklist, etc.
-    html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
-    # cytoscape block
-    html.Div(id="cytoscape-block", children=[cytoscape]),
-]
-
+# figure for the timeline view
 fig = px.timeline(
     data_frame=project_data,
     x_start="Start Date",
@@ -99,6 +93,15 @@ for index, row in project_data.iterrows():
             arrowcolor="black",
         )
 
+
+# LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
+
+network_view_layout = [
+    # menu block for filters, checklist, etc.
+    html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
+    # cytoscape block
+    html.Div(id="cytoscape-block", children=[cytoscape]),
+]
 
 app.layout = html.Div(
     id="app-container",
@@ -224,6 +227,7 @@ def displayTapNodeData(data):
     return result
 
 
+# display help text in timeline view
 @app.callback(
     Output("info-panel", "children", allow_duplicate=True),
     Input("tabs", "value"),
