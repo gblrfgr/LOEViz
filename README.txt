@@ -1,6 +1,7 @@
 LOE VISUALIZATION README
 
 Updated 05/11/2023 by Cyrus Rad
+Updated 05/17/2023 by Juniper Mills
 
 SUMMARY
 
@@ -9,12 +10,13 @@ These features will likely be tweaked and/or combined to create a single app in 
 
 All apps revolved around the Dash 'cytoscape' object, which creates a network-like visualization of project dependencies.
 All apps share the same initial elements and stylesheet for the cytoscape.
-As a result, 'elements.py' and 'styling.py' are the same for all apps.
-All apps also share 'click' and 'hover' capabilities to display information about a particular node.
+All apps also share 'click' and/or 'hover' capabilities to display information about a particular node.
 
 
 1. LOEViz_base:
-	Demonstrates how the user can selectively view LOEs through the use of a checklist.
+	Demonstrates how the user can selectively view LOEs through the use of a checklist. Also features a timeline view,
+	whereby project data can be visualized in a Gantt chart that also shows dependencies. Moreover, this app loads project
+	data from an Excel file.
 	
 2. LOEViz_downstream:
 	Demonstrates how the user can change the status of a particular node and see the downstream effects on dependent nodes.
@@ -27,6 +29,7 @@ FILE STRUCTURE
 app.py: contains layout and callbacks for app
 elements.py: creates element variables (nodes represent objectives, edges represent dependencies) for cytoscape
 styling.py: creates stylesheet for cytoscape
+data_loading.py (only for LOEViz_base): defines additional functions to handle loading Excel data
 helper.py (only for LOEViz_downstream): defines additional functions that support the main slider callback function
 	
 HOW TO RUN
@@ -44,4 +47,12 @@ HOW TO RUN
 	Copy and paste the 'http://127.0.0.1:XXXX/' into a web browser and the app should appear.
 6. Ctrl+C in the command window to stop serving the app.
 	
+
+LOEVIZ_BASE ONLY
+
+In order to start the app, the project state file must not be concurrently open in Excel. Additionally, to reload the data,
+one must press Ctrl+C in the command window to stop serving the app and then restart it. Once the app is running, the file may
+be opened in Excel, but saved changes will not be reflected in the app until it is restarted. Any deviation from the existing format,
+except for capitalization in the status text and the formatting of the date columns (though it must be formatted as an Excel date),
+will result in the program ending with an error.
 	

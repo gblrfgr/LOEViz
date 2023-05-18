@@ -15,14 +15,16 @@ from elements import (
     project_data,
 )
 
+
 # APP CAPABILITIES:
 # 1. DISPLAY LOE NETWORK
-# 2. CLICK AND HOVER TO DISPLAY NODE OBJECTIVE DETAILS
+# 2. CLICK TO DISPLAY NODE OBJECTIVE DETAILS
 # 3. SELECTIVELY VIEW LOES
+# 4. DISPLAY LOES IN A TIMELINE VIEW WHICH ALSO DISPLAYS DEPENDENCIES
 
 app = Dash(__name__)
-
 cyto.load_extra_layouts()
+
 
 # CREATE MORE COMPLEX APP COMPONENTS
 
@@ -38,39 +40,7 @@ cytoscape = cyto.Cytoscape(
     stylesheet=stylesheet,
 )
 
-# LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
-
-network_view_layout = [
-    # menu block for filters, checklist, etc.
-    html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
-    # cytoscape block
-    html.Div(id="cytoscape-block", children=[cytoscape, html.Hr()]),
-    # info block
-    html.Div(
-        id="info-block",
-        children=[
-            # left column displays click data
-            html.Div(
-                id="left-col",
-                style={"width": "40%", "height": "100px", "float": "left"},
-                children=[
-                    html.H4("Click Info"),
-                    html.P(id="cytoscape-tapNodeData-output"),
-                ],
-            ),
-            # right column displays hover data
-            html.Div(
-                id="right-col",
-                style={"width": "40%", "height": "100px", "float": "right"},
-                children=[
-                    html.H4("Hover Info"),
-                    html.P(id="cytoscape-mouseoverNodeData-output"),
-                ],
-            ),
-        ],
-    ),
-]
-
+# figure for the timeline view
 fig = px.timeline(
     data_frame=project_data,
     x_start="Start Date",
@@ -84,6 +54,7 @@ fig = px.timeline(
         "Complete": "blue",
     },
     hover_data="Description",
+    height=500,
 )
 fig.add_shape(
     type="line",
@@ -123,27 +94,50 @@ for index, row in project_data.iterrows():
         )
 
 
+# LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
+
+network_view_layout = [
+    # menu block for filters, checklist, etc.
+    html.Div(id="menu-block", children=[loe_checklist, html.Hr()]),
+    # cytoscape block
+    html.Div(id="cytoscape-block", children=[cytoscape]),
+]
+
 app.layout = html.Div(
     id="app-container",
     children=[
+        # content
         html.Div(
             [
                 dcc.Tabs(
                     [
                         dcc.Tab(
                             label="Network View",
+                            value="network",
                             className="tab",
                             children=network_view_layout,
                         ),
                         dcc.Tab(
                             label="Timeline View",
+                            value="timeline",
                             className="tab",
                             children=dcc.Graph(figure=fig),
                         ),
-                    ]
+                    ],
+                    id="tabs",
+                    value="network",
                 )
-            ]
-        )
+            ],
+            id="content",
+        ),
+        # info block
+        html.Div(
+            id="info-block",
+            children=[
+                html.H3("Info"),
+                html.P(id="info-panel"),
+            ],
+        ),
     ],
 )
 
@@ -212,20 +206,38 @@ def loe_filter(loe_checklist: list[str]):
 
 # display node info when clicked
 @app.callback(
-    Output("cytoscape-tapNodeData-output", "children"),
+    Output("info-panel", "children", allow_duplicate=True),
     Input("cytoscape", "tapNodeData"),
+    prevent_initial_call=True,
 )
 def displayTapNodeData(data):
-    return json.dumps(data, indent=2)
+    if data is None:
+        return
+    result = [
+        html.H4("ID"),
+        html.P(data["id"]),
+        html.H4("Description"),
+        html.P(data["description"]),
+    ]
+    if not data["id"].startswith("LOE"):
+        result += [
+            html.H4("Status"),
+            html.P(data["status"]),
+        ]
+    return result
 
 
-# display node info when hovered over
+# display help text in timeline view
 @app.callback(
-    Output("cytoscape-mouseoverNodeData-output", "children"),
-    Input("cytoscape", "mouseoverNodeData"),
+    Output("info-panel", "children", allow_duplicate=True),
+    Input("tabs", "value"),
+    prevent_initial_call=True,
 )
-def displayTapEdgeData(data):
-    return json.dumps(data, indent=2)
+def switchToTimelineText(tab):
+    if tab == "timeline":
+        return html.H4(
+            "Arrows show dependency relationships. To see additional information, hover on the timeline bars."
+        )
 
 
 if __name__ == "__main__":

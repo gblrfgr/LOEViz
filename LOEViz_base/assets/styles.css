@@ -6,3 +6,22 @@ body {
 .tab {
     font-weight: 600;
 }
+
+#app-container {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    gap: 3em;
+    height: 100%;
+}
+
+#content {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+#info-block {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    background-color: rgb(240, 240, 240);
+    padding: 3em;
+}
