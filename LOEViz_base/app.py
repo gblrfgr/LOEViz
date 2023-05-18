@@ -35,7 +35,7 @@ loe_checklist = dcc.Checklist(id="loe_checklist", options=loes_list, value=loes_
 cytoscape = cyto.Cytoscape(
     id="cytoscape",
     layout={"name": "dagre", "rankDir": "TB"},
-    style={"width": "100%", "height": "500px"},
+    style={"width": "100%", "height": "650px"},
     elements=all_elements,
     stylesheet=stylesheet,
 )
@@ -92,6 +92,9 @@ for index, row in project_data.iterrows():
             arrowwidth=1.5,
             arrowcolor="black",
         )
+fig.update_layout(
+   margin=dict(l=0, r=0, t=100, b=0)
+)
 
 
 # LAYOUT DETERMINES ORGANIZATION OF COMPONENTS ON THE APP
